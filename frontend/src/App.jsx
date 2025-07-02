@@ -6,6 +6,7 @@ import { FaTrash } from "react-icons/fa6";
 import { IoClipboardOutline } from "react-icons/io5";
 import axios from "axios";
 import DarkModeToggle from './DarkModeToggle';
+import AuthModal from './AuthModal';
 import './darkmode.css';
 
 function App() {
@@ -17,32 +18,70 @@ function App() {
     // Check localStorage for theme preference
     return localStorage.getItem('theme') === 'dark';
   });
+  const [user, setUser] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  // Check for existing authentication on app load
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
+    if (token && userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   const addTodo = async (e) => {
     e.preventDefault();
     if (!newTodo.trim()) return;
     try {
-      const response = await axios.post("/api/todos", { text: newTodo });
+      const token = localStorage.getItem("token");
+      const response = await axios.post("/api/todos", { text: newTodo }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setTodos([...todos, response.data]);
       setNewTodo("");
     } catch (error) {
       console.log("Error adding todo:", error);
+      if (error.response?.status === 401) {
+        handleLogout();
+      }
     }
   };
 
   const fetchTodos = async () => {
+    if (!user) return;
     try {
-      const response = await axios.get("/api/todos");
+      const token = localStorage.getItem("token");
+      const response = await axios.get("/api/todos", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       console.log(response.data);
       setTodos(response.data);
     } catch (error) {
       console.log("Error fetching todos:", error);
+      if (error.response?.status === 401) {
+        handleLogout();
+      }
     }
   };
 
   useEffect(() => {
-    fetchTodos();
-  }, []);
+    if (user) {
+      fetchTodos();
+    }
+  }, [user]);
+
+  const handleAuth = (userData) => {
+    setUser(userData);
+    setIsAuthModalOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    setTodos([]);
+  };
 
   useEffect(() => {
     if (darkMode) {
@@ -61,45 +100,90 @@ function App() {
 
   const saveEdit = async (id) => {
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.patch(`/api/todos/${id}`, {
         text: editedText,
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       setTodos(todos.map((todo) => (todo._id === id ? response.data : todo)));
       setEditingTodo(null);
     } catch (error) {
       console.log("Error updating todo:", error);
+      if (error.response?.status === 401) {
+        handleLogout();
+      }
     }
   };
 
   const deleteTodo = async (id) => {
     try {
-      await axios.delete(`/api/todos/${id}`);
+      const token = localStorage.getItem("token");
+      await axios.delete(`/api/todos/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setTodos(todos.filter((todo) => todo._id !== id));
     } catch (error) {
       console.log("Error deleting todo:", error);
+      if (error.response?.status === 401) {
+        handleLogout();
+      }
     }
   };
 
   const toggleTodo = async (id) => {
     try {
+      const token = localStorage.getItem("token");
       const todo = todos.find((t) => t._id === id);
       const response = await axios.patch(`/api/todos/${id}`, {
         completed: !todo.completed,
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       setTodos(todos.map((t) => (t._id === id ? response.data : t)));
     } catch (error) {
       console.log("Error toggline todo:", error);
+      if (error.response?.status === 401) {
+        handleLogout();
+      }
     }
   };
 
   return (
     <div className={`app-container${darkMode ? ' dark-bg' : ''}`}>
       <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
+      
       <div className="flex items-center justify-center min-h-screen p-4">
         <div className="main-card bg-white rounded-2xl shadow-xl w-full p-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">
-            Task Manager
-          </h1>
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-800 text-center flex-1">
+              Task Manager
+            </h1>
+            {user && (
+              <div className="flex items-center gap-4">
+                <span className="text-gray-600">Hello, {user.username}!</span>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+
+          {!user ? (
+            <div className="text-center">
+              <p className="text-gray-600 mb-6">Please login to manage your tasks</p>
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium"
+              >
+                Login / Register
+              </button>
+            </div>
+          ) : (
+            <div>
 
           <form
             onSubmit={addTodo}
@@ -196,8 +280,16 @@ function App() {
               </div>
             )}
           </div>
+            </div>
+          )}
         </div>
       </div>
+      
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+        onAuth={handleAuth} 
+      />
     </div>
   );
 }
