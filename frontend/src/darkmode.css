@@ -1,0 +1,317 @@
+body.dark {
+  background: #181A2A;
+  color: #f4f4f4;
+  transition: background 0.5s, color 0.5s;
+}
+
+body, .app-container {
+  min-height: 100vh;
+  background: #f8f6f3;
+  background-image: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="200" cy="200" rx="180" ry="120" fill="%23f3e9e1"/><ellipse cx="1000" cy="600" rx="200" ry="140" fill="%23f3e9e1"/><ellipse cx="600" cy="400" rx="300" ry="180" fill="%23f7ede7"/><path d="M100 700 Q 300 600 500 700 T 900 700" stroke="%23e7d6ce" stroke-width="8" fill="none"/><path d="M200 100 Q 400 200 600 100 T 1000 100" stroke="%23e7d6ce" stroke-width="8" fill="none"/></svg>');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  transition: background 0.5s;
+}
+
+body.dark, .app-container.dark-bg {
+  background: #181A2A;
+  background-image: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="200" cy="200" rx="180" ry="120" fill="%2323243a"/><ellipse cx="1000" cy="600" rx="200" ry="140" fill="%2323243a"/><ellipse cx="600" cy="400" rx="300" ry="180" fill="%23282a3d"/><path d="M100 700 Q 300 600 500 700 T 900 700" stroke="%23353a5a" stroke-width="8" fill="none"/><path d="M200 100 Q 400 200 600 100 T 1000 100" stroke="%23353a5a" stroke-width="8" fill="none"/></svg>');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: transparent;
+  transition: background 0.5s;
+}
+
+.dark-toggle {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 100;
+  background: transparent;
+  border: 2px solid rgba(255, 99, 132, 0.18);
+  outline: none;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  border-radius: 30px;
+  box-shadow: 0 4px 24px 0 rgba(255, 99, 132, 0.08), 0 2px 12px 0 rgba(0,0,0,0.06);
+  transition: box-shadow 0.3s, transform 0.2s, border-color 0.3s, background 0.3s;
+  background: none;
+}
+body.dark .dark-toggle, .app-container.dark-bg .dark-toggle {
+  border: 2px solid rgba(120,120,140,0.18) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+}
+.dark-toggle:focus {
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 2px #60a5fa33;
+}
+.dark-toggle:not(:focus) {
+  border-color: rgba(255, 99, 132, 0.18);
+}
+body.dark .dark-toggle:not(:focus), .app-container.dark-bg .dark-toggle:not(:focus) {
+  border-color: rgba(120,120,140,0.18) !important;
+}
+.dark-toggle:active {
+  transform: scale(0.95);
+}
+.dark-toggle.toggled {
+  animation: toggle-bounce 0.3s;
+}
+@keyframes toggle-bounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.08); }
+  60% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+.toggle-bg-rect {
+  fill: #fff !important;
+  transition: fill 0.5s;
+  filter: drop-shadow(0 2px 12px rgba(255,99,132,0.10)) drop-shadow(0 2px 8px rgba(0,0,0,0.06));
+}
+body.dark .toggle-bg-rect, .app-container.dark-bg .toggle-bg-rect {
+  fill: #181A2A !important;
+  filter: drop-shadow(0 2px 12px rgba(0,0,0,0.18));
+}
+.toggle-moon, .toggle-sun {
+  transition: cx 0.5s cubic-bezier(.4,2,.6,1), fill 0.5s, r 0.5s;
+}
+.toggle-moon {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: cx 0.5s cubic-bezier(.4,2,.6,1), fill 0.5s, r 0.5s, opacity 0.4s, transform 0.4s;
+}
+.moon-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+.toggle-sun {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: cx 0.5s cubic-bezier(.4,2,.6,1), fill 0.5s, r 0.5s, opacity 0.4s, transform 0.4s;
+  filter: drop-shadow(0 0 8px #ffe06688);
+}
+.sun-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+.toggle-stars {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+.stars-visible {
+  opacity: 1;
+}
+.toggle-sun-rays rect {
+  opacity: 0.5;
+  filter: blur(0.5px);
+  transform-origin: 90px 30px;
+  /* No animation, rays are always visible in light mode */
+}
+.toggle-bg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.moon-group .moon {
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.08));
+}
+
+.dark-toggle svg {
+  display: block;
+}
+
+/* Card and input dark mode styles */
+body.dark .bg-white,
+.app-container.dark-bg .bg-white {
+  background: #23243a !important;
+  color: #f4f4f4 !important;
+}
+body.dark .text-gray-800,
+.app-container.dark-bg .text-gray-800 {
+  color: #f4f4f4 !important;
+}
+body.dark .text-gray-700,
+.app-container.dark-bg .text-gray-700 {
+  color: #e0e0e0 !important;
+}
+body.dark .border-gray-200,
+.app-container.dark-bg .border-gray-200 {
+  border-color: #35365a !important;
+}
+body.dark .placeholder-gray-400,
+.app-container.dark-bg .placeholder-gray-400 {
+  color: #b0b0b0 !important;
+}
+body.dark .bg-blue-500 {
+  background: #3b82f6 !important;
+}
+body.dark .bg-green-500 {
+  background: #22c55e !important;
+}
+body.dark .bg-gray-200 {
+  background: #35365a !important;
+}
+body.dark .bg-gray-300 {
+  background: #23243a !important;
+}
+body.dark .hover\:bg-blue-600:hover {
+  background: #2563eb !important;
+}
+body.dark .hover\:bg-green-600:hover {
+  background: #16a34a !important;
+}
+body.dark .hover\:bg-gray-300:hover {
+  background: #23243a !important;
+}
+body.dark .hover\:bg-blue-50:hover {
+  background: #23243a !important;
+}
+body.dark .hover\:bg-red-50:hover {
+  background: #23243a !important;
+}
+body.dark .text-blue-500 {
+  color: #60a5fa !important;
+}
+body.dark .text-blue-700 {
+  color: #3b82f6 !important;
+}
+body.dark .text-red-500 {
+  color: #f87171 !important;
+}
+body.dark .text-red-700 {
+  color: #ef4444 !important;
+}
+body.dark .rounded-2xl {
+  box-shadow: 0 2px 24px rgba(0,0,0,0.25);
+}
+
+.main-card {
+  width: 520px;
+  max-width: 99vw;
+  min-width: 350px;
+  min-height: 210px;
+  margin: 2rem 0;
+  box-sizing: border-box;
+  box-shadow: 0 8px 32px 0 rgba(60, 60, 120, 0.18), 0 1.5px 6px 0 rgba(0,0,0,0.10);
+  opacity: 0;
+  transform: translateY(40px) scale(0.98);
+  animation: card-fade-in 0.7s cubic-bezier(.4,2,.6,1) 0.1s forwards;
+}
+@keyframes card-fade-in {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.add-task-btn {
+  transition: transform 0.15s cubic-bezier(.4,2,.6,1), box-shadow 0.2s;
+}
+.add-task-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 2px 8px rgba(60, 120, 255, 0.12);
+}
+.add-task-btn:active {
+  transform: scale(0.97);
+}
+.todo-item {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: todo-fade-in 0.5s cubic-bezier(.4,2,.6,1) forwards;
+}
+@keyframes todo-fade-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.todo-item:hover {
+  background: rgba(60,120,255,0.04);
+  transition: background 0.2s;
+}
+
+@media (max-width: 600px) {
+  .main-card {
+    width: 98vw;
+    min-width: unset;
+    margin: 1rem 0;
+  }
+}
+
+.day-night-switch-gradient {
+  fill: url(#toggle-gradient);
+}
+
+.toggle-handle {
+  transition: cx 0.5s cubic-bezier(.4,2,.6,1), fill 0.5s, r 0.5s, filter 0.4s;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
+}
+
+.toggle-bg.day-night-switch-bg svg {
+  /* Add SVG gradient definition for the background */
+}
+
+.icon-btn {
+  transition: transform 0.15s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
+}
+.icon-btn:hover {
+  transform: scale(1.13);
+  box-shadow: 0 2px 8px rgba(60, 120, 255, 0.10);
+  z-index: 1;
+}
+.icon-btn:active {
+  transform: scale(0.92);
+}
+
+.tick-btn {
+  border: 2.5px solid #b0b8d9;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  transition: border-color 0.25s cubic-bezier(.4,2,.6,1), background 0.25s cubic-bezier(.4,2,.6,1), box-shadow 0.2s;
+}
+.tick-btn.completed {
+  background: #22c55e;
+  border-color: #22c55e;
+  transition: border-color 0.25s cubic-bezier(.4,2,.6,1), background 0.25s cubic-bezier(.4,2,.6,1), box-shadow 0.2s;
+}
+.tick-btn .tick-animate {
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.22s cubic-bezier(.4,2,.6,1), transform 0.22s cubic-bezier(.4,2,.6,1);
+}
+.tick-btn.completed .tick-animate {
+  opacity: 1;
+  transform: scale(1);
+}
+body.dark .tick-btn .tick-animate {
+  transition: none;
+}
+body.dark .tick-btn, .app-container.dark-bg .tick-btn {
+  border-color: #3b4266;
+}
+body.dark .tick-btn.completed, .app-container.dark-bg .tick-btn.completed {
+  background: #22c55e;
+  border-color: #22c55e;
+}
+body.dark .tick-btn.completed svg, .app-container.dark-bg .tick-btn.completed svg {
+  color: #fff;
+  fill: #fff;
+} 
